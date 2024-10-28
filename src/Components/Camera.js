@@ -1,11 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
+import '../Styles/Camera.css';
 
 function Camera() {
+  const videoRef = useRef(null);
+
   useEffect(() => {
     async function requestCameraAccess() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-        // You can now use the stream to display the camera feed
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
         console.log('Camera access granted');
       } catch (error) {
         console.error('Camera access denied', error);
@@ -16,9 +21,9 @@ function Camera() {
   }, []);
 
   return (
-    <div>
+    <div className="camera-container">
       <h2>Camera Component</h2>
-      <p>Requesting camera access...</p>
+      <video ref={videoRef} autoPlay className="camera-feed"></video>
     </div>
   );
 }
