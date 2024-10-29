@@ -1,36 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import '../Styles/UserMessages.css';
 import { FaMicrophone, FaPaperPlane, FaPhone, FaVideo, FaPlus } from 'react-icons/fa6';
 import { auth } from '../firebase';
-import Messages from './Messages';
+import { useMessages } from './Messages';
 
 const UserMessages = ({ user }) => {
-  const [messages, setMessages] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const { messages, loading, error, sendMessage } = useMessages(user.id, auth.currentUser?.uid);
   const [inputMessage, setInputMessage] = useState('');
-  const messagesInstance = React.useRef(new Messages());
-
-  useEffect(() => {
-    const messages = messagesInstance.current;
-    
-    messages.addListener('messages', setMessages);
-    messages.initialize(user.id, auth.currentUser?.uid);
-
-    return () => {
-      messages.cleanup();
-      messages.removeListener('messages', setMessages);
-    };
-  }, [user.id]);
 
   const handleSendMessage = async () => {
     if (inputMessage.trim()) {
-      try {
-        await messagesInstance.current.sendMessage(inputMessage);
-        setInputMessage('');
-      } catch (error) {
-        setError(error.message);
-      }
+      await sendMessage(inputMessage);
+      setInputMessage('');
     }
   };
 

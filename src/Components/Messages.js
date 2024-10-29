@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { db, auth } from '../firebase';
 import { 
   collection, 
@@ -9,60 +10,45 @@ import {
   where,
   getDocs,
   doc,
-  batch
+  writeBatch
 } from 'firebase/firestore';
 import { io } from "socket.io-client";
 
 const socket = io('http://localhost:3000');
 
-class Messages {
+class MessageService {
   constructor() {
     this.socket = socket;
     this.messageListeners = new Map();
-    this.messages = [];
-    this.loading = true;
-    this.error = null;
   }
 
-  async initialize(chatId, userId) {
-    try {
-      this.chatId = chatId;
-      this.userId = userId;
-      await this.subscribeToMessages();
-      this.listenToSocketMessages();
-    } catch (error) {
-      this.error = error.message;
-    }
-  }
-
-  subscribeToMessages() {
+  subscribeToMessages = (chatId, callback) => {
     const q = query(
-      collection(db, `chats/${this.chatId}/messages`),
+      collection(db, `chats/${chatId}/messages`),
       orderBy('timestamp', 'asc')
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      this.messages = snapshot.docs.map(doc => ({
+      const messages = snapshot.docs.map(doc => ({
         id: doc.id,
         ...doc.data()
       }));
-      this.loading = false;
-      this.notifyListeners('messages', this.messages);
+      callback(messages);
     });
 
-    this.messageListeners.set(this.chatId, unsubscribe);
-  }
+    this.messageListeners.set(chatId, unsubscribe);
+    return unsubscribe;
+  };
 
-  listenToSocketMessages() {
-    this.socket.on('receive_message', (data) => {
-      if (data.chatId === this.chatId) {
-        this.messages = [...this.messages, data];
-        this.notifyListeners('messages', this.messages);
-      }
-    });
-  }
+  unsubscribeFromMessages = (chatId) => {
+    const unsubscribe = this.messageListeners.get(chatId);
+    if (unsubscribe) {
+      unsubscribe();
+      this.messageListeners.delete(chatId);
+    }
+  };
 
-  async sendMessage(message) {
+  sendMessage = async (chatId, message, userId) => {
     try {
       const messageData = {
         text: message,
@@ -73,80 +59,103 @@ class Messages {
       };
 
       const docRef = await addDoc(
-        collection(db, `chats/${this.chatId}/messages`),
+        collection(db, `chats/${chatId}/messages`),
         messageData
       );
 
       this.socket.emit('new_message', {
-        chatId: this.chatId,
+        chatId,
         messageId: docRef.id,
-        userId: this.userId,
+        userId,
         message
       });
 
       return docRef.id;
     } catch (error) {
-      this.error = error.message;
+      console.error('Error sending message:', error);
       throw error;
     }
-  }
+  };
 
-  async markAsRead(messageIds) {
+  markAsRead = async (chatId, messageIds) => {
     try {
-      const batchOp = batch();
+      const batch = writeBatch(db);
       messageIds.forEach(messageId => {
-        const messageRef = doc(db, `chats/${this.chatId}/messages/${messageId}`);
-        batchOp.update(messageRef, { read: true });
+        const messageRef = doc(db, `chats/${chatId}/messages/${messageId}`);
+        batch.update(messageRef, { read: true });
       });
-      await batchOp.commit();
+      await batch.commit();
     } catch (error) {
-      this.error = error.message;
+      console.error('Error marking messages as read:', error);
+      throw error;
     }
-  }
+  };
 
-  async getUnreadCount() {
+  getUnreadCount = async (chatId, userId) => {
     try {
       const q = query(
-        collection(db, `chats/${this.chatId}/messages`),
+        collection(db, `chats/${chatId}/messages`),
         where('read', '==', false),
-        where('sender', '!=', this.userId)
+        where('sender', '!=', userId)
       );
       const snapshot = await getDocs(q);
       return snapshot.size;
     } catch (error) {
-      this.error = error.message;
+      console.error('Error getting unread count:', error);
       return 0;
     }
-  }
+  };
 
-  addListener(event, callback) {
-    if (!this.listeners) this.listeners = new Map();
-    if (!this.listeners.has(event)) {
-      this.listeners.set(event, new Set());
-    }
-    this.listeners.get(event).add(callback);
-  }
+  listenToNewMessages = (callback) => {
+    this.socket.on('receive_message', (data) => {
+      callback(data);
+    });
+  };
 
-  removeListener(event, callback) {
-    if (this.listeners?.has(event)) {
-      this.listeners.get(event).delete(callback);
-    }
-  }
-
-  notifyListeners(event, data) {
-    if (this.listeners?.has(event)) {
-      this.listeners.get(event).forEach(callback => callback(data));
-    }
-  }
-
-  cleanup() {
+  cleanup = () => {
     this.socket.off('receive_message');
     this.messageListeners.forEach(unsubscribe => unsubscribe());
     this.messageListeners.clear();
-    if (this.listeners) {
-      this.listeners.clear();
-    }
-  }
+  };
 }
 
-export default Messages;
+export const messageService = new MessageService();
+
+export const useMessages = (chatId, userId) => {
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (chatId) {
+      setLoading(true);
+      const unsubscribe = messageService.subscribeToMessages(chatId, (newMessages) => {
+        setMessages(newMessages);
+        setLoading(false);
+      });
+
+      messageService.listenToNewMessages((data) => {
+        if (data.chatId === chatId) {
+          setMessages(prev => [...prev, data]);
+        }
+      });
+
+      return () => {
+        unsubscribe();
+        messageService.cleanup();
+      };
+    }
+  }, [chatId]);
+
+  const sendMessage = async (message) => {
+    try {
+      await messageService.sendMessage(chatId, message, userId);
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  return { messages, loading, error, sendMessage };
+};
+
+export default messageService;
