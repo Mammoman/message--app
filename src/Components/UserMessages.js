@@ -7,56 +7,68 @@ const socket = io('http://localhost:3000');
 
 const UserMessages = ({ user }) => {
   const [messages, setMessages] = useState([]);
+  const [inputMessage, setInputMessage] = useState('');
 
   useEffect(() => {
     // Fetch messages from server and handle socket connection
   }, []);
 
+  const handleSendMessage = () => {
+    if (inputMessage.trim()) {
+      // Handle sending message
+      setInputMessage('');
+    }
+  };
+
   return (
-    <div className="user-messages-container">
-      <div className="chat-sidebar">
-        <div className="user-header">
-          <h2>All Chats</h2>
-          <input type="text" placeholder="Search" className="search-input" />
-        </div>
-        <div className="chat-list">
-          {/* Map through users and display */}
-        </div>
-      </div>
-      
-      <div className="chat-main">
-        <div className="user-header">
+    <div className='main-container'>
+    <div className="messages-wrapper">
+      <div className="messages-header">
+        <div className="user-info">
+        <div className="user-avatar">
+  {user.avatar ? (
+    typeof user.avatar === 'string' && user.avatar.length === 1 ? (
+      <div className="avatar-letter">{user.avatar}</div>
+    ) : (
+      <img src={user.avatar} alt={user.name} className="avatar-image" />
+    )
+  ) : (
+    <div className="avatar-placeholder"></div>
+  )}
+  {user.isOnline && <div className="status online"></div>}
+</div>
           <h2>{user.name}</h2>
-          <div className="header-icons">
-            <FaPhone className="icon" />
-            <FaVideo className="icon" />
-            <FaPlus className="icon plus-icon" />
-          </div>
         </div>
-        
-        <div className="messages">
-          {/* Map through messages and display */}
-          {messages.map((msg, index) => (
-            <div key={index} className={`message ${msg.sent ? 'sent' : 'received'}`}>
-              <p>{msg.text}</p>
-              <span className="time">{msg.time}</span>
-            </div>
-          ))}
-        </div>
-        
-        <div className="input-container">
-          <input type="text" placeholder="Your message" />
-          <FaMicrophone className="icon" />
-          <FaPaperPlane className="icon" />
+        <div className="header-icons">
+          <FaPhone className="icon" />
+          <FaVideo className="icon" />
+          <FaPlus className="icon plus-icon" />
         </div>
       </div>
       
-      <div className="chat-details">
-        <h3>Chat Details</h3>
-        {/* Additional details like shared files, links, etc. */}
+      <div className="messages-content">
+        {messages.map((msg, index) => (
+          <div key={index} className={`message ${msg.sent ? 'sent' : 'received'}`}>
+            <p>{msg.text}</p>
+            <span className="time">{msg.time}</span>
+          </div>
+        ))}
+      </div>
+      
+      <div className="input-container">
+        <input 
+          type="text" 
+          placeholder="Enter your message" 
+          value={inputMessage}
+          onChange={(e) => setInputMessage(e.target.value)}
+          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+        />
+        <FaMicrophone className="icon" />
+        <FaPaperPlane className="icon" onClick={handleSendMessage} />
       </div>
     </div>
+    </div>
   );
-};
+}
 
 export default UserMessages;

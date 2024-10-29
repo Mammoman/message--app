@@ -10,8 +10,8 @@ const Dashboard = () => {
     };
   return (
     <div className='dashboard-container'>
-      <h1>Welcome Back</h1>
-      <button onClick={handleContinue}>Continue</button>
+      <h1 >Welcome Back</h1>
+      <button onClick={handleContinue} className='continue-button'>Continue</button>
     </div>
   );
 };

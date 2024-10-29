@@ -1,95 +1,128 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { FaCamera, FaComments, FaUser, FaSearch } from 'react-icons/fa';
-import Stories from './Stories';  
+import React, { useState } from 'react';
+import { FaSearch, FaUsers, FaComments, FaCog, FaShieldAlt, FaUserFriends } from 'react-icons/fa';
 import UserMessages from './UserMessages';
-import { io } from 'socket.io-client';
 import '../Styles/Mainpage.css';
-//import Camera from './Components/Camera';
-
 
 const Mainpage = () => {
-    const [selectedUser, setSelectedUser] = useState(null);
-    const [isAuthenticated, setIsAuthenticated] = useState(true);
-
-    const socket = io('http://localhost:3000');
-    const users = [
-      { id: 1, name: 'Phillip Franci', pinned: true },
-      { id: 2, name: 'Alfredo Saris', pinned: true },
-      { id: 3, name: 'Jaylon Franci' },
-      { id: 4, name: 'Tatiana Dorwart' },
-      { id: 5, name: 'Terry Bergson' },
-    ];
+  const [selectedUser, setSelectedUser] = useState(null);
   
+  const users = [
+    { 
+      id: 1, 
+      name: 'Patrick Hendricks', 
+      message: "Hey! there I'm available", 
+      time: '05 min',
+      avatar: '/path/to/avatar1.jpg',
+      isOnline: true 
+    },
+    { 
+      id: 2, 
+      name: 'Mark Messer', 
+      message: 'Images', 
+      time: '12 min',
+      avatar: '/path/to/avatar2.jpg',
+      isOnline: true,
+      unread: 2
+    },
+    { 
+      id: 3, 
+      name: 'General', 
+      message: 'This theme is awesome!', 
+      time: '20 min',
+      avatar: 'G',
+      isOnline: false 
+    },
+    { 
+      id: 4, 
+      name: 'Doris Brown', 
+      message: 'Nice to meet you', 
+      time: '10:12 AM',
+      avatar: '/path/to/avatar3.jpg',
+      isOnline: true 
+    }
+  ];
 
+  const quickAccess = [
+    { id: 1, name: 'Patrick', avatar: '/path/to/avatar1.jpg', isOnline: true },
+    { id: 2, name: 'Doris', avatar: '/path/to/avatar2.jpg', isOnline: true },
+    { id: 3, name: 'Emily', avatar: '/path/to/avatar3.jpg', isOnline: true },
+    { id: 4, name: 'Steve', avatar: '/path/to/avatar4.jpg', isOnline: true }
+  ];
 
-
-    return (
-      <div>
-        
-            {isAuthenticated && (
-          <div className="content-container">
-            {selectedUser ? (
-              <UserMessages user={selectedUser} />
-            ) : (
-              <>
-                <header className="header">
-                  <h2>You Received 48 Messages</h2>
-                  <span className="options-icon">⋮</span>
-                </header>
-                <Stories users={users} />
-                <div className="search-bar">
-                  <FaSearch className="search-icon" />
-                  <input type="text" placeholder="Search..." />
-                </div>
-                <div className="message-categories">
-                  <button className="active">Direct Message</button>
-                  <button>Group</button>
-                </div>
-                <div className="message-list">
-                  <h3>Pinned Messages</h3>
-                  {users.filter(user => user.pinned).map(user => (
-                    <div
-                      className="message-card"
-                      key={user.id}
-                      onClick={() => setSelectedUser(user)}
-                    >
-                      <div className="avatar-placeholder"></div>
-                      <div className="message-content">
-                        <h3>{user.name}</h3>
-                        <p>Last message preview...</p>
-                      </div>
-                    </div>
-                  ))}
-                  <h3>All Messages</h3>
-                  {users.map(user => (
-                    <div
-                      className="message-card"
-                      key={user.id}
-                      onClick={() => setSelectedUser(user)}
-                    >
-                      <div className="avatar-placeholder"></div>
-                      <div className="message-content">
-                        <h3>{user.name}</h3>
-                        <p>Last message preview...</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <nav className="nav-bar">
-                  <Link to="/camera">
-                    <FaCamera className="nav-icon" />
-                  </Link>
-                  <FaComments className="nav-icon active" />
-                  <FaUser className="nav-icon" />
-                </nav>
-              </>
-            )}
-          </div>
-           )}
+  return (
+    <div className="mainpage-container">
+      <div className="sidebar">
+        <div className="logo">
+          <FaComments className="sidebar-icon active" />
+        </div>
+        <div className="nav-icons">
+          <FaUsers className="sidebar-icon" />
+          <FaUserFriends className="sidebar-icon" />
+          <FaCog className="sidebar-icon" />
+          <FaShieldAlt className="sidebar-icon" />
+        </div>
       </div>
-    );
-}
 
+      <div className="chat-container">
+        <h1>Chats</h1>
+        
+        <div className="search-container">
+          <FaSearch className="search-icon" />
+          <input type="text" placeholder="Search messages or users" />
+        </div>
+
+        <div className="quick-access">
+          {quickAccess.map(user => (
+            <div key={user.id} className="quick-access-item">
+              <div className="avatar">
+                <div className={`status ${user.isOnline ? 'online' : ''}`}></div>
+              </div>
+              <span>{user.name}</span>
+            </div>
+          ))}
+        </div>
+
+        <h2>Recent</h2>
+        <div className="chat-list">
+          {users.map(user => (
+            <div 
+              key={user.id} 
+              className={`chat-item ${selectedUser?.id === user.id ? 'active' : ''}`}
+              onClick={() => setSelectedUser(user)}
+            >
+              <div className="chat-avatar">
+                {typeof user.avatar === 'string' && user.avatar.length === 1 ? (
+                  <div className="avatar-letter">{user.avatar}</div>
+                ) : (
+                  <div className="avatar">
+                    <div className={`status ${user.isOnline ? 'online' : ''}`}></div>
+                  </div>
+                )}
+              </div>
+              <div className="chat-info">
+                <div className="chat-header">
+                  <h3>{user.name}</h3>
+                  <span className="time">{user.time}</span>
+                </div>
+                <p className="last-message">{user.message}</p>
+              </div>
+              {user.unread && <div className="unread-badge">{user.unread}</div>}
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="main-content">
+        {selectedUser ? (
+          <UserMessages user={selectedUser} />
+        ) : (
+          <div className="empty-state">
+            <p>Select a chat to read messages</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+};
 
 export default Mainpage;
