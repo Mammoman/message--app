@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import { FaSearch, FaUsers, FaComments, FaCog, FaShieldAlt, FaUserFriends } from 'react-icons/fa';
 import UserMessages from './UserMessages';
 import '../Styles/Mainpage.css';
+import { io } from "socket.io-client";
+
+const socket = io('http://localhost:3000');
 
 const Mainpage = () => {
   const [selectedUser, setSelectedUser] = useState(null);
@@ -10,17 +13,17 @@ const Mainpage = () => {
     { 
       id: 1, 
       name: 'Patrick Hendricks', 
-      message: "Hey! there I'm available", 
+      message: "Hey! there I'm Not available", 
       time: '05 min',
-      avatar: '/path/to/avatar1.jpg',
+      avatar: 'PH',
       isOnline: true 
     },
     { 
       id: 2, 
       name: 'Mark Messer', 
       message: 'Images', 
-      time: '12 min',
-      avatar: '/path/to/avatar2.jpg',
+      time: '12/09/2022',
+      avatar: 'MM',
       isOnline: true,
       unread: 2
     },
@@ -28,25 +31,26 @@ const Mainpage = () => {
       id: 3, 
       name: 'General', 
       message: 'This theme is awesome!', 
-      time: '20 min',
-      avatar: 'G',
-      isOnline: false 
+      time: 'Yesterday',
+      avatar:  'GG', 
+      isOnline: false,
+      unread: 44
     },
     { 
       id: 4, 
       name: 'Doris Brown', 
-      message: 'Nice to meet you', 
+      message: ' Not Nice to meet you', 
       time: '10:12 AM',
-      avatar: '/path/to/avatar3.jpg',
+      avatar: 'DB',
       isOnline: true 
     }
   ];
 
   const quickAccess = [
-    { id: 1, name: 'Patrick', avatar: '/path/to/avatar1.jpg', isOnline: true },
-    { id: 2, name: 'Doris', avatar: '/path/to/avatar2.jpg', isOnline: true },
-    { id: 3, name: 'Emily', avatar: '/path/to/avatar3.jpg', isOnline: true },
-    { id: 4, name: 'Steve', avatar: '/path/to/avatar4.jpg', isOnline: true }
+    { id: 1, name: 'Patrick', avatar: 'image1', isOnline: true },
+    { id: 2, name: 'Doris', avatar: 'image2', isOnline: true },
+    { id: 3, name: 'Emily', avatar: 'image3', isOnline: false },
+    { id: 4, name: 'Steve', avatar: 'image4', isOnline: true }
   ];
 
   return (
@@ -104,9 +108,12 @@ const Mainpage = () => {
                   <h3>{user.name}</h3>
                   <span className="time">{user.time}</span>
                 </div>
-                <p className="last-message">{user.message}</p>
+                <div className="chat-mess">
+                  <p className="last-message">{user.message}</p>
+                  {user.unread && <div className="unread-badge">{user.unread}</div>}
+                </div>
               </div>
-              {user.unread && <div className="unread-badge">{user.unread}</div>}
+             
             </div>
           ))}
         </div>

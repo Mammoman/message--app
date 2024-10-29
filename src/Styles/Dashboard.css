@@ -4,7 +4,6 @@
     width: 900px;
     padding: 120px;
     background-image: url('../../public/image/dashboard.jpg');
-    
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
     margin: 2rem auto;
   }

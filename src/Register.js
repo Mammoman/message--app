@@ -1,57 +1,109 @@
 import {auth} from './firebase'
 import {signInWithEmailAndPassword} from 'firebase/auth'
-import {createUserWithEmailAndPassword} from 'firebase/auth'
+import {createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect} from 'firebase/auth'
 import React, {useState} from 'react'
 import { FaGoogle, FaLinkedinIn,FaFacebook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'
 import './Styles/Login.css';
 
 const Register = () => {
-  const [isSignUp, setIsSignUp] = useState(false);
+  const [isSignUp, setIsSignUp] = useState(true);
   const [email, setEmail] = useState('daniel@gmail.com');
-  const [password, setPassword] = useState('123456');
+  const [password, setPassword] = useState('12345');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+
+  const login = async (e) => {
+    e.preventDefault();
+    try {
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      navigate('/dashboard');
+    } catch (error) {
+      switch (error.code) {
+        case 'auth/invalid-credential':
+          setError('Invalid email or password');
+          break;
+        case 'auth/user-not-found':
+          setError('No account found with this email');
+          break;
+        case 'auth/wrong-password':
+          setError('Incorrect password');
+          break;
+        default:
+          setError('An error occurred. Please try again.');
+      }
+    }
+  };
 
   const toggleSignUp = () => {
     setIsSignUp(!isSignUp);
   };
 
-  const login = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
-    setError('');
-    signInWithEmailAndPassword(auth, email, password)
-      .then((res) => {
-        console.log('User logged in:', res.user);
-        localStorage.setItem('authToken', res.user.accessToken);
-        navigate('/dashboard'); 
-      })
-      .catch((err) => setError(err.message));
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // Store additional user info in Firestore if needed
+      navigate('/dashboard');
+    } catch (error) {
+      setError(error.message);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    try {
+      const provider = new GoogleAuthProvider();
+      await signInWithRedirect(auth, provider);
+      navigate('/dashboard');
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
     <div className={`container ${isSignUp ? 'right-panel-active' : ''}`} id="container">
       <div className="form-container sign-up-container">
-        <form action="#">
+        <form onSubmit={handleSignUp}>
           <h1>Create Account</h1>
           <div className="social-container">
             <FaFacebook className="socials"/>
-            <FaGoogle className="socials"/>
+            <FaGoogle className="socials" onClick={handleGoogleSignIn}/>
             <FaLinkedinIn className="socials"/>
           </div>
           <span className='text4'>or use your email for registration</span>
-          <input type="text" placeholder="Name" className='text'/>
-          <input type="email" placeholder="Email"/>
-          <input type="password" placeholder="Password"/>
-          <button>Sign Up</button>
+          <input 
+            type="text" 
+            placeholder="Name" 
+            className='text'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+          />
+          <input 
+            type="email" 
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input 
+            type="password" 
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Sign Up</button>
+          {error && <p className="error-message">{error}</p>}
         </form>
       </div>
       <div className="form-container sign-in-container">
         <form onSubmit={login} name='login_form'>
           <h1>Sign in</h1>
           <div className="social-container">
-          <FaFacebook className="socials"/>
-            <FaGoogle className="socials"/>
+            <FaFacebook className="socials"/>
+            <FaGoogle className="socials" onClick={handleGoogleSignIn}/>
             <FaLinkedinIn className="socials"/>
           </div>
           <span>or use your account</span>
@@ -82,7 +134,7 @@ const Register = () => {
             <button className="ghost" id="signIn" onClick={toggleSignUp}>Sign In</button>
           </div>
           <div className="overlay-panel overlay-right">
-            <h1>Hello, Friend!</h1>
+            <h1>Hello, Weirdo!</h1>
             <p>Enter your personal details and start journey with us</p>
             <button className="ghost" id="signUp" onClick={toggleSignUp}>Sign Up</button>
           </div>

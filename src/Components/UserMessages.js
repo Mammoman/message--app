@@ -1,24 +1,41 @@
 import React, { useState, useEffect } from 'react';
-import { io } from "socket.io-client";
 import '../Styles/UserMessages.css';
 import { FaMicrophone, FaPaperPlane, FaPhone, FaVideo, FaPlus } from 'react-icons/fa6';
-
-const socket = io('http://localhost:3000');
+import { auth } from '../firebase';
+import Messages from './Messages';
 
 const UserMessages = ({ user }) => {
   const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [inputMessage, setInputMessage] = useState('');
+  const messagesInstance = React.useRef(new Messages());
 
   useEffect(() => {
-    // Fetch messages from server and handle socket connection
-  }, []);
+    const messages = messagesInstance.current;
+    
+    messages.addListener('messages', setMessages);
+    messages.initialize(user.id, auth.currentUser?.uid);
 
-  const handleSendMessage = () => {
+    return () => {
+      messages.cleanup();
+      messages.removeListener('messages', setMessages);
+    };
+  }, [user.id]);
+
+  const handleSendMessage = async () => {
     if (inputMessage.trim()) {
-      // Handle sending message
-      setInputMessage('');
+      try {
+        await messagesInstance.current.sendMessage(inputMessage);
+        setInputMessage('');
+      } catch (error) {
+        setError(error.message);
+      }
     }
   };
+
+  if (loading) return <div>Loading messages...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <div className='main-container'>
@@ -42,7 +59,7 @@ const UserMessages = ({ user }) => {
         <div className="header-icons">
           <FaPhone className="icon" />
           <FaVideo className="icon" />
-          <FaPlus className="icon plus-icon" />
+          
         </div>
       </div>
       
@@ -56,15 +73,19 @@ const UserMessages = ({ user }) => {
       </div>
       
       <div className="input-container">
+
+      <FaPlus className="icon plus-icon" />
+
         <input 
           type="text" 
           placeholder="Enter your message" 
           value={inputMessage}
           onChange={(e) => setInputMessage(e.target.value)}
-          onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+          onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
         />
+        
         <FaMicrophone className="icon" />
-        <FaPaperPlane className="icon" onClick={handleSendMessage} />
+        {/* <FaPaperPlane className="icon" onClick={handleSendMessage} /> */}
       </div>
     </div>
     </div>

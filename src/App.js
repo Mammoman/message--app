@@ -5,6 +5,7 @@ import Register from './Register';
 import './App.css';
 import { io } from "socket.io-client";
 import Mainpage from './Components/Mainpage';
+import Profile from './Components/Profile';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Register />} />
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/mainpage" element={<Mainpage />} />
+        <Route path='profile' element={<Profile />} />
         </Routes>
         
       </div>
