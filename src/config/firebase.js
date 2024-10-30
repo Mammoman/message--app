@@ -3,7 +3,6 @@ import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
-
 const firebaseConfig = {
     apiKey: "AIzaSyAaFI-IhyfHwuRsyfN_ZQz3ji0nbJ8emCA",
     authDomain: "chat-apppp-c388d.firebaseapp.com",
@@ -13,11 +12,10 @@ const firebaseConfig = {
     appId: "1:1001600396443:web:def768bfd2d2acd9682a3e",
     measurementId: "G-6S455E6SGS"
 };
-
+  
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
 const auth = getAuth(app);
 const db = getFirestore(app);
-
 export { auth, db };

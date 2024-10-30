@@ -1,15 +1,15 @@
-import {auth} from './firebase'
+import {auth} from '../../config/firebase'
 import {signInWithEmailAndPassword} from 'firebase/auth'
 import {createUserWithEmailAndPassword, GoogleAuthProvider, signInWithRedirect} from 'firebase/auth'
 import React, {useState} from 'react'
 import { FaGoogle, FaLinkedinIn,FaFacebook } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom'
-import './Styles/Login.css';
+import '../../styles/auth/Login.css'
 
 const Register = () => {
   const [isSignUp, setIsSignUp] = useState(true);
-  const [email, setEmail] = useState('daniel@gmail.com');
-  const [password, setPassword] = useState('12345');
+  const [email, setEmail] = useState('daniel08seun@gmail.com');
+  const [password, setPassword] = useState('daniel08');
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Register = () => {
     e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      navigate('/dashboard');
+      navigate('/chat');
     } catch (error) {
       switch (error.code) {
         case 'auth/invalid-credential':
@@ -44,8 +44,7 @@ const Register = () => {
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // Store additional user info in Firestore if needed
-      navigate('/dashboard');
+      navigate('/chat');
     } catch (error) {
       setError(error.message);
     }
@@ -55,13 +54,14 @@ const Register = () => {
     try {
       const provider = new GoogleAuthProvider();
       await signInWithRedirect(auth, provider);
-      navigate('/dashboard');
+      navigate('/chat');
     } catch (error) {
       setError(error.message);
     }
   };
 
   return (
+    <div className='bodyy'>
     <div className={`container ${isSignUp ? 'right-panel-active' : ''}`} id="container">
       <div className="form-container sign-up-container">
         <form onSubmit={handleSignUp}>
@@ -140,6 +140,7 @@ const Register = () => {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 };
