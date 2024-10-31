@@ -3,11 +3,11 @@ import React, { useState } from 'react';
 import Profile from './Profile';
 import Account from './Account';
 import Appearance from './Appearance';
-import './Appearance.js';
 import '../../styles/settings/Settings.css'
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
+ 
 
   return (
     <div className="settings-container">

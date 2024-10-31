@@ -1,25 +1,22 @@
 import React from 'react';
-import { FaSearch } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faSearch } from '@fortawesome/free-solid-svg-icons';
 import '../../styles/chat/ChatList.css';
 
 const ChatList = ({ users, quickAccess, selectedUser, onSelectUser }) => {
   return (
     
-    
-
-
     <div className="chat-list-container">
-      <div className='user-info'  >
-        <img src='pathavata' alt='imm' className='us-avata'/>
-        <span>vinkag gog</span>
-
-      </div>
       <div className="chat-list-header">
-        <h2>Design chat</h2>
+        <h2>Messages</h2>
         <p>23 members, 10 online</p>
-        <div className="search-container">
-          <FaSearch className="search-icon" />
-          <input type="text" placeholder="Search" />
+        <div className=''>
+        <div className="search">
+          <div className="chat-search-container">
+            <input type="text" placeholder="Search" /> 
+          </div>
+          <span>Search</span>
+        </div>
         </div>
       </div>
 

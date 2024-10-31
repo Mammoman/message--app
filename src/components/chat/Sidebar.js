@@ -1,6 +1,6 @@
-// src/components/chat/Sidebar.js
 import React, { useState } from 'react';
-import { FaHome, FaComments, FaUsers, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faMessage, faCog, faSignOutAlt, faFolderClosed } from '@fortawesome/free-solid-svg-icons';
 import { useNavigate } from 'react-router-dom';
 import { auth } from '../../config/firebase';
 import '../../styles/chat/Sidebar.css';
@@ -29,7 +29,7 @@ const Sidebar = () => {
             <div className="sidebar-top">
                 <div className="user-avatar">
                     {currentUser?.photoURL ? (
-                        <img src={currentUser.photoURL} alt="Profile" />
+                        <img src={currentUser.photoURL} alt="" className="avatar-image" />
                     ) : (
                         <div className="avatar-placeholder">
                             {currentUser?.email?.charAt(0).toUpperCase()}
@@ -39,23 +39,27 @@ const Sidebar = () => {
             </div>
 
             <div className="sidebar-menu">
-                <button className="menu-item active">
-                    <FaHome />
+                
+                <button className="menu-item">
+                    <FontAwesomeIcon icon={faMessage} />
+                    <p>All chats</p>
                 </button>
                 <button className="menu-item">
-                    <FaComments />
+                    <FontAwesomeIcon icon={faFolderClosed} />
+                    <p>Archived</p>
                 </button>
-                <button className="menu-item">
-                    <FaUsers />
-                </button>
-                <button className="menu-item" onClick={toggleSettings}>
-                    <FaCog />
-                </button>
+               
             </div>
 
             <div className="sidebar-bottom">
+            <button className="menu-item" onClick={toggleSettings}>
+                    <FontAwesomeIcon icon={faCog} />
+                    <p>Settings</p>
+                </button>
+
                 <button className="menu-item logout" onClick={handleSignOut}>
-                    <FaSignOutAlt />
+                    <FontAwesomeIcon icon={faSignOutAlt} />
+                    <p>Logout</p>
                 </button>
             </div>
 

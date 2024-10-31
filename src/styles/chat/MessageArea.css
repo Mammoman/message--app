@@ -4,6 +4,9 @@
     flex-direction: column;
     background: #fff;
     min-width: 0;
+    border-radius: 20px;
+    border:  1px solid  #000000;
+    margin:  14px;
   }
   
   .message-header {
@@ -133,4 +136,63 @@
     display: flex;
     align-items: center;
     gap: 4px;
+  }
+
+  .no-chat-selected {
+    display: flex; 
+    justify-content: center; 
+    align-items: center;
+    height: 100%; 
+    text-align: center; 
+    color: #77838f; 
+    font-size: 18px; 
+  }
+
+  .message-box {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-top: 1px solid #ccc; /* Optional: Add a border for separation */
+    background-color: #f9f9f9; /* Light background for the message box */
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
+  }
+
+  .message-input {
+    flex: 1;
+    padding: 10px 15px; /* More padding for comfort */
+    border: 1px solid #ccc;
+    border-radius: 20px; /* Rounded corners */
+    margin: 0 10px; /* Space between icons and input */
+    font-size: 16px; /* Increase font size for readability */
+    transition: border-color 0.3s; /* Smooth transition for focus */
+  }
+
+  .message-input:focus {
+    border-color: #007bff; /* Change border color on focus */
+    outline: none; /* Remove default outline */
+  }
+
+  .action-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #007bff; /* Change to your preferred color */
+    transition: color 0.3s; /* Smooth transition for hover */
+  }
+
+  .action-btn:hover {
+    color: #0056b3; /* Darker shade on hover */
+  }
+
+  .plus-btn, .microphone-btn {
+    font-size: 24px; /* Increase size for better visibility */
+    margin: 0 5px; /* Space between icons */
+  }
+
+  .plus-btn {
+    color: #28a745; /* Green color for plus icon */
+  }
+
+  .microphone-btn {
+    color: #dc3545; /* Red color for microphone icon */
   }

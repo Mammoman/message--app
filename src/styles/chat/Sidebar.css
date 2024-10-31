@@ -1,17 +1,32 @@
 .sidebar {
   width: 100px;
-  height: 100vh;
-  background: #f8f9fa;
-  border-right: 1px solid #e6e9f0;
+  height: 100%;
+  background: #0A0A0A;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 24px 0;
+  justify-content: space-between;
+  padding: 0% ;
 }
 
-.sidebar-top {
-  margin-bottom: 30px;
+.sidebar-top{
+    margin-top: 15px;
+    margin-bottom:  50px ;
 }
+
+.user-avatar{
+    background-color: #6c757d;
+    width: 60px;
+    height:60px; 
+    border-radius: 50%;
+  }
+  
+  .avatar-image {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+  }
 
 .sidebar-avatar {
   width: 45px;
@@ -36,44 +51,36 @@
   font-weight: bold;
 }
 
-.sidebar-menu {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  width: 100%;
-  padding: 0 15px;
+.sidebar-menu,.sidebar-bottom{
+    display: flex;
+    flex-direction: column;
+    margin-bottom:  16px;
+    padding: 0 15px;
 }
 
-.sidebar-menu-item {
-  width: 60px;
-  height: 60px;
-  border-radius: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: #6c757d;
-  cursor: pointer;
-  transition: all 0.2s ease;
+.sidebar-menu{
+    margin-top: -100%;
 }
 
-.sidebar-menu-item:hover {
-  background: #e9ecef;
-  color: #0d6efd;
+ .menu-item{
+    font-size: 2.4em;
+    border-radius: 4px;
+   border: none;
+   color: #cfc9c9;
+   background: none;
 }
 
-.sidebar-menu-item.active {
-  background: #e7f1ff;
-  color: #0d6efd;
+.menu-item:hover{
+    background-color: #ffffff;
+    color: #b6b6b6;
 }
 
-.sidebar-bottom {
-  margin-top: auto;
-  padding: 0 15px;
-  width: 100%;
+.menu-item p{
+    font-size: 0.4em;
+    margin-top: 4px;
 }
+
+
 
 .menu-item.logout {
   color: #dc3545;
@@ -93,7 +100,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Ensure it appears above other content */
+    z-index: 1000; 
   }
 
   .settings-content {
@@ -132,15 +139,6 @@
   .settings-overlay .close-settings:hover {
     background: #e7e7e7;
   }
-
-  .close-settings {
-    background: #e7e7e7;
-    border: none;
-    padding: 8px 12px;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background 0.3s;
-}
 
 .close-settings:hover {
     background: #d0d0d0;
